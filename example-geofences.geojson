@@ -1,0 +1,56 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "DelhiHall1",
+        "mac": "feed31446a32"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.20018682855103, 28.594483408107756],
+          [77.2002, 28.594483408107756],
+          [77.2002, 28.5945],
+          [77.20018682855103, 28.5945],
+          [77.20018682855103, 28.594483408107756]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "ConferenceRoomA",
+        "mac": "e5238b458bbb"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.2003, 28.5946],
+          [77.2004, 28.5946],
+          [77.2004, 28.5947],
+          [77.2003, 28.5947],
+          [77.2003, 28.5946]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "BuildingEntrance"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.1999, 28.5942],
+          [77.2000, 28.5942],
+          [77.2000, 28.5943],
+          [77.1999, 28.5943],
+          [77.1999, 28.5942]
+        ]]
+      }
+    }
+  ]
+}
+
