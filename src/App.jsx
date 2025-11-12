@@ -8,6 +8,8 @@ import GeofenceLayer from './components/GeofenceLayer'
 import ControlPanel from './components/ControlPanel'
 import EventLog from './components/EventLog'
 import StatisticsPanel from './components/StatisticsPanel'
+import Notification from './components/Notification'
+import NotificationHistory from './components/NotificationHistory'
 
 // Fix Leaflet default icon issue
 delete L.Icon.Default.prototype._getIconUrl
@@ -47,6 +49,9 @@ function App() {
   const [showEventAnimations, setShowEventAnimations] = useState(true)
   const [focusMode, setFocusMode] = useState(false)
   const [focusedBadge, setFocusedBadge] = useState(null)
+  const [notifications, setNotifications] = useState([]) // Popup notifications (auto-dismiss)
+  const [notificationHistory, setNotificationHistory] = useState([]) // Persistent history
+  const [showNotificationHistory, setShowNotificationHistory] = useState(false)
   const eventsRef = useRef(events)
 
   useEffect(() => {
@@ -140,6 +145,42 @@ function App() {
         }
         
         setEvents(prev => [newEvent, ...prev].slice(0, 100)) // Keep last 100 events
+
+        // Extract geofence name from hook (format: geofence_{mac}_{boundary_name})
+        let geofenceName = newEvent.hook || 'unknown'
+        if (geofenceName.includes('_')) {
+          const parts = geofenceName.split('_')
+          if (parts.length >= 3) {
+            geofenceName = parts.slice(2).join('_') // Get everything after geofence_{mac}_
+          }
+        }
+
+        // Show notification for enter/exit events
+        if (newEvent.detect === 'enter' || newEvent.detect === 'exit') {
+          const badgeId = newEvent.id || 'unknown'
+          const message = `geofence for badge "${badgeId}" on fence "${geofenceName}" had ${newEvent.detect}`
+          
+          const notificationId = Date.now() + Math.random()
+          const timestamp = new Date().toISOString()
+          
+          // Add to popup notifications (auto-dismiss)
+          setNotifications(prev => [...prev, {
+            id: notificationId,
+            message,
+            type: newEvent.detect,
+            timestamp
+          }])
+          
+          // Add to persistent history
+          setNotificationHistory(prev => [{
+            id: notificationId,
+            message,
+            type: newEvent.detect,
+            timestamp,
+            badgeId,
+            geofenceName
+          }, ...prev].slice(0, 1000)) // Keep last 1000 events
+        }
 
         // Update badge status based on event
         if (newEvent.id) {
@@ -438,15 +479,59 @@ function App() {
     }
   }
 
+  const handleCloseNotification = (id) => {
+    setNotifications(prev => prev.filter(n => n.id !== id))
+  }
+
+  const handleClearNotificationHistory = () => {
+    if (window.confirm('Are you sure you want to clear all notification history?')) {
+      setNotificationHistory([])
+    }
+  }
+
   return (
     <div className="app">
+      {/* Notification Container */}
+      <div className="notification-container">
+        {notifications.map(notification => (
+          <Notification
+            key={notification.id}
+            message={notification.message}
+            type={notification.type}
+            onClose={() => handleCloseNotification(notification.id)}
+            duration={8000}
+          />
+        ))}
+      </div>
+
       <header className="app-header">
         <h1>Geofence Visualization Tool</h1>
-        <div className="connection-status">
-          <span className={`status-indicator ${connected ? 'connected' : 'disconnected'}`}></span>
-          <span>{connected ? 'Connected' : 'Disconnected'}</span>
+        <div className="header-actions">
+          <button 
+            className="notification-history-button"
+            onClick={() => setShowNotificationHistory(!showNotificationHistory)}
+            title="View notification history"
+          >
+            🔔 Notifications
+            {notificationHistory.length > 0 && (
+              <span className="notification-badge">{notificationHistory.length}</span>
+            )}
+          </button>
+          <div className="connection-status">
+            <span className={`status-indicator ${connected ? 'connected' : 'disconnected'}`}></span>
+            <span>{connected ? 'Connected' : 'Disconnected'}</span>
+          </div>
         </div>
       </header>
+
+      {/* Notification History Panel */}
+      {showNotificationHistory && (
+        <NotificationHistory
+          notifications={notificationHistory}
+          onClear={handleClearNotificationHistory}
+          onClose={() => setShowNotificationHistory(false)}
+        />
+      )}
       
       <div className="app-content">
         <div className="sidebar">
