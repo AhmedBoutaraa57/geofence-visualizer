@@ -25,7 +25,7 @@ This guide explains how to deploy the Geofence Visualizer to Render.com.
    - **Environment**: `Node`
    - **Build Command**: 
      ```bash
-     npm install && cd server && npm install && cd .. && npm run build
+     npm install --production=false && cd server && npm install && cd .. && npm run build
      ```
    - **Start Command**: 
      ```bash
