@@ -6,7 +6,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "server": "node server/index.js"
+    "server": "node server/index.js",
+    "start": "node server/index.js",
+    "build:all": "npm run build && npm run start"
   },
   "dependencies": {
     "react": "^18.2.0",

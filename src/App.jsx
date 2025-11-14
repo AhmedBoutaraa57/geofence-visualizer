@@ -113,7 +113,9 @@ function App() {
 
   useEffect(() => {
     // Connect to WebSocket server
-    const newSocket = io('http://localhost:3001', {
+    // Use relative URL in production, absolute URL in development
+    const socketUrl = import.meta.env.PROD ? window.location.origin : 'http://localhost:3001'
+    const newSocket = io(socketUrl, {
       transports: ['websocket', 'polling']
     })
 

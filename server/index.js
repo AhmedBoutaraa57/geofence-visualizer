@@ -5,7 +5,7 @@ import mqtt from 'mqtt'
 import cors from 'cors'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
-import { readFileSync } from 'fs'
+import { readFileSync, existsSync } from 'fs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -276,6 +276,26 @@ app.get('/api/config', (req, res) => {
     }
   })
 })
+
+// Serve static files from the built frontend (for production)
+const distPath = join(__dirname, '..', 'dist')
+try {
+  const distExists = existsSync(distPath)
+  if (distExists) {
+    app.use(express.static(distPath))
+    // Serve index.html for all non-API routes (SPA routing)
+    app.get('*', (req, res) => {
+      if (!req.path.startsWith('/api') && !req.path.startsWith('/socket.io')) {
+        res.sendFile(join(distPath, 'index.html'))
+      }
+    })
+    console.log('✅ Serving static files from dist/')
+  } else {
+    console.log('⚠️  dist/ directory not found - running in API-only mode')
+  }
+} catch (error) {
+  console.log('⚠️  Could not serve static files:', error.message)
+}
 
 // Start server
 const PORT = process.env.PORT || 3001

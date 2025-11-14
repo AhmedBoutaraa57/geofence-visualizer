@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: geofence-visualizer
+    env: node
+    buildCommand: npm install && cd server && npm install && cd .. && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        fromService:
+          type: web
+          name: geofence-visualizer
+          property: port
+      # MQTT Configuration - Set these in Render dashboard
+      - key: MQTT_BROKER
+        sync: false  # Set manually in dashboard
+      - key: MQTT_BROKER_IN
+        sync: false
+      - key: MQTT_BROKER_PORT
+        sync: false
+      - key: MQTT_BROKER_PROTOCOL
+        sync: false
+      - key: MQTT_USERNAME
+        sync: false
+      - key: MQTT_PASSWORD
+        sync: false
+      - key: MQTT_TOPIC_BADGES
+        sync: false
+      - key: MQTT_TOPIC_GEOFENCE
+        sync: false
+
