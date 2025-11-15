@@ -31,3 +31,21 @@
 This mimics real device location updates that the Rapids System processes. The Geofencing module checks for violations and sends updates to the geofence queue, which appear as notifications in the tool:
 
 ![Geofence Notification](./geofence-notif.png)
+
+
+## When EXIT event fires
+
+EXIT fires when the badge moves away from the geofence:
+
+1. Center inside but circle outside: badge center is inside, but the radius circle is fully outside (radius grew too large).
+2. Circle contains entire geofence: the radius circle grew so large it fully contains the geofence polygon (badge moved far away).
+3. Both center and circle outside: badge center and circle are both fully outside the geofence (badge left completely).
+
+## When ENTER event fires
+
+ENTER fires when the badge moves into the geofence:
+
+1. Circle intersects geofence: any part of the radius circle touches or enters the geofence polygon (badge is moving back toward the geofence).
+
+Note: Events only fire on state changes. If the badge is already inside/outside, no event fires until it actually transitions.
+
